@@ -41,6 +41,20 @@ class CarSpec extends Specification with Results with Mockito {
       contentAsString(result) must not contain("Audi")
     }
 
+    "should delete a car with id 1" in new WithApplication {
+      val controller = new Cars
+      Await.result(controller.dbConfig.db.run(TestData.setup), Duration.Inf)
+      val request = FakeRequest(DELETE, "/cars/1")
+      val result = controller.delete(1)(request)
+
+      status(result) must equalTo(200)
+      controller.findAll("id", false).map { cars =>
+        cars.size must equalTo(1)
+        cars.head.id must not equalTo(1)
+      }
+      contentAsString(result) must contain("deleted")
+    }
+
     "should sort by price ascending" in new WithApplication {
       val controller = new Cars
       Await.result(controller.dbConfig.db.run(TestData.setup), Duration.Inf)

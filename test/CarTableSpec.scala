@@ -55,6 +55,24 @@ class CarTableSpec extends Specification {
       cars.head.title must equalTo("Ferrari")
     }
 
+    "should delete an existing car" in new WithApplication {
+      Await.result(CarTable.dbConfig.db.run(TestData.setup), Duration.Inf)
+      Await.result(CarTable.destroy(1), Duration.Inf)
+      val cars = Await.result(CarTable.findAll("", false), Duration.Inf)
+
+      cars.size must equalTo(1)
+      cars.head.id must equalTo(2)
+    }
+
+    "should return 0 if car that was requested for deletion does not exist" in new WithApplication {
+      Await.result(CarTable.dbConfig.db.run(TestData.setup), Duration.Inf)
+      val result = Await.result(CarTable.destroy(9999999), Duration.Inf)
+      val cars = Await.result(CarTable.findAll("", false), Duration.Inf)
+
+      result must equalTo(0)
+      cars.size must equalTo(2)
+    }
+
  }
 
 }

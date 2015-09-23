@@ -1,3 +1,4 @@
 # Cars
 GET    /cars        controllers.Cars.index
+DELETE /cars/:id    controllers.Cars.delete(id: Int)
 GET    /cars/:id    controllers.Cars.show(id: Int)

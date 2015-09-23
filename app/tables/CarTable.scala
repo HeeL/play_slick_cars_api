@@ -40,6 +40,8 @@ trait CarTable extends HasDatabaseConfig[JdbcProfile]{
 
   def findOne(id: Int) = db.run(find(id).result.headOption)
 
+  def destroy(id: Int) = db.run(find(id).delete)
+
   private def find(id: Int) = cars.filter(_.id === id)
 
   private def sortField(car: Cars, sortBy: String, desc: Boolean) = {

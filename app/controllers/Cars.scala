@@ -23,4 +23,8 @@ class Cars extends Controller with CarTable {
     CarTable.findOne(id).map(res => Ok(Json.toJson(res.get)))
   }
 
+  def delete(id: Int) = Action.async {
+    CarTable.destroy(id).map(_ => Ok(Json.toJson("deleted")))
+  }
+
 }
