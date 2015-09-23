@@ -55,6 +55,25 @@ class CarTableSpec extends Specification {
       cars.head.title must equalTo("Ferrari")
     }
 
+    "should create a new car" in new WithApplication {
+      val new_car = Car(3, "BMW", 5000, true, 1, None)
+      Await.result(CarTable.create(new_car), Duration.Inf)
+      val cars = Await.result(CarTable.findAll("", false), Duration.Inf)
+
+      cars.last.title must equalTo(new_car.title)
+      cars.last.price must equalTo(new_car.price)
+    }
+
+    "should update an existing car" in new WithApplication {
+      Await.result(CarTable.dbConfig.db.run(TestData.setup), Duration.Inf)
+      val car = Car(1, "BMW i320", 5000, true, 1, None)
+      Await.result(CarTable.update(1, car), Duration.Inf)
+      val cars = Await.result(CarTable.findAll("", false), Duration.Inf)
+
+      cars.head.title must equalTo(car.title)
+      cars.head.price must equalTo(car.price)
+    }
+
     "should delete an existing car" in new WithApplication {
       Await.result(CarTable.dbConfig.db.run(TestData.setup), Duration.Inf)
       Await.result(CarTable.destroy(1), Duration.Inf)

@@ -41,6 +41,60 @@ class CarSpec extends Specification with Results with Mockito {
       contentAsString(result) must not contain("Audi")
     }
 
+    "should create a new record for car" in new WithApplication {
+      val controller = new Cars
+      Await.result(controller.dbConfig.db.run(TestData.setup), Duration.Inf)
+      val request = FakeRequest(POST, "/cars").withFormUrlEncodedBody(
+        "id"        -> "3",
+        "title"     -> "Lada",
+        "price"     -> "123",
+        "is_new"    -> "true",
+        "fuel"      -> "2"
+      ).withHeaders(CONTENT_TYPE -> "application/x-www-form-urlencoded")
+      val result = controller.create()(request)
+      status(result) must equalTo(200)
+      controller.findAll("id", true).map { cars =>
+        cars.size must equalTo(3)
+        cars.last.title must equalTo("Lada")
+      }
+    }
+
+    "should show badrequest and validation errors if object wasn't saved" in new WithApplication {
+      val controller = new Cars
+      Await.result(controller.dbConfig.db.run(TestData.setup), Duration.Inf)
+      val request = FakeRequest(POST, "/cars")
+        .withHeaders(CONTENT_TYPE -> "application/x-www-form-urlencoded")
+
+      val result = controller.create()(request)
+      //badrequest is thrown
+      status(result) must equalTo(400)
+      contentType(result) must beSome.which(_ == "application/json")
+      val errorsList = List(
+        "price\":[\"This field is required\"]",
+        "fuel\":[\"This field is required\"]",
+        "title\":[\"This field is required\"]"
+      )
+      contentAsString(result) must containAllSubstringsIn(errorsList)
+    }
+
+    "should show updated record for a car with id 1" in new WithApplication {
+      val controller = new Cars
+      Await.result(controller.dbConfig.db.run(TestData.setup), Duration.Inf)
+      val request = FakeRequest(PUT, "/cars/1")
+        .withFormUrlEncodedBody(
+          "id"     -> "1",
+          "title"  -> "BMW i320",
+          "price"  -> "123",
+          "is_new" -> "true",
+          "fuel"   -> "2"
+        )
+        .withHeaders(CONTENT_TYPE -> "application/x-www-form-urlencoded")
+      val result = controller.update(1)(request)
+
+      status(result) must equalTo(200)
+      controller.findOne(1).map(_.get.title must equalTo("BMW i320"))
+    }
+
     "should delete a car with id 1" in new WithApplication {
       val controller = new Cars
       Await.result(controller.dbConfig.db.run(TestData.setup), Duration.Inf)

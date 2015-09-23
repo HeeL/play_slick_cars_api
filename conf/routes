@@ -1,4 +1,6 @@
 # Cars
 GET    /cars        controllers.Cars.index
+POST   /cars        controllers.Cars.create
+PUT    /cars/:id    controllers.Cars.update(id: Int)
 DELETE /cars/:id    controllers.Cars.delete(id: Int)
 GET    /cars/:id    controllers.Cars.show(id: Int)
