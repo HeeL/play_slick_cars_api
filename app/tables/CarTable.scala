@@ -6,6 +6,7 @@ import play.api.db.slick.{DatabaseConfigProvider, HasDatabaseConfig}
 import slick.driver.JdbcProfile
 import slick.driver.PostgresDriver.api._
 import slick.lifted.Tag
+import play.api.libs.json.{JsValue, Writes, Json}
 
 object CarTable extends CarTable
 
@@ -30,5 +31,11 @@ trait CarTable extends HasDatabaseConfig[JdbcProfile]{
   }
 
   val cars = TableQuery[Cars]
+
+  implicit val carFormat = Json.format[Car]
+
+  def findAll = {
+    db.run(cars.result)
+  }
 
 }
