@@ -1,2 +1,3 @@
 # Cars
 GET    /cars        controllers.Cars.index
+GET    /cars/:id    controllers.Cars.show(id: Int)

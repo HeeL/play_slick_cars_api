@@ -16,5 +16,12 @@ class IntegrationSpec extends Specification {
       browser.pageSource must contain("Audi A3")
     }
 
+    "show a single car from within a browser" in new WithBrowser {
+      browser.goTo("http://localhost:" + port + "/cars/1")
+
+      browser.pageSource must not contain("Ferrari")
+      browser.pageSource must contain("Audi A3")
+    }
+
   }
 }

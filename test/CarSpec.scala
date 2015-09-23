@@ -30,6 +30,17 @@ class CarSpec extends Specification with Results with Mockito {
       contentAsString(result) must containAllSubstringsIn(List("Audi A3", "Ferrari"))
     }
 
+    "should show car with id 2" in new WithApplication {
+      val controller = new Cars
+      val request = FakeRequest(GET, "/cars/2")
+      val result = controller.show(2)(request)
+
+      status(result) must equalTo(200)
+      contentType(result) must beSome.which(_ == "application/json")
+      contentAsString(result) must contain("Ferrari")
+      contentAsString(result) must not contain("Audi")
+    }
+
     "should sort by price ascending" in new WithApplication {
       val controller = new Cars
       Await.result(controller.dbConfig.db.run(TestData.setup), Duration.Inf)

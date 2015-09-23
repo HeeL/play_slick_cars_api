@@ -16,6 +16,20 @@ import models._
 class CarTableSpec extends Specification {
 
   "Cars" should {
+    "should find car by id" in new WithApplication {
+      Await.result(CarTable.dbConfig.db.run(TestData.setup), Duration.Inf)
+      val car_id = 1
+      val car = Await.result(CarTable.findOne(car_id), Duration.Inf)
+
+      car.get.id must equalTo(car_id)
+    }
+
+    "should get None if no car with such id exists" in new WithApplication {
+      Await.result(CarTable.dbConfig.db.run(TestData.setup), Duration.Inf)
+      val car = Await.result(CarTable.findOne(9999999), Duration.Inf)
+
+      car must equalTo(None)
+    }
 
     "should return a list of cars" in new WithApplication {
       Await.result(CarTable.dbConfig.db.run(TestData.setup), Duration.Inf)

@@ -38,6 +38,10 @@ trait CarTable extends HasDatabaseConfig[JdbcProfile]{
     db.run(cars.sortBy(sortField(_, sortBy, desc)).result)
   }
 
+  def findOne(id: Int) = db.run(find(id).result.headOption)
+
+  private def find(id: Int) = cars.filter(_.id === id)
+
   private def sortField(car: Cars, sortBy: String, desc: Boolean) = {
     (sortBy, desc) match {
       case ("title",   false) => car.title.asc

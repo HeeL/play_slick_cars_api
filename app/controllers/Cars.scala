@@ -19,4 +19,8 @@ class Cars extends Controller with CarTable {
     CarTable.findAll(sort, desc).map(res => Ok(Json.toJson(res.toList)))
   }
 
+  def show(id: Int) = Action.async {
+    CarTable.findOne(id).map(res => Ok(Json.toJson(res.get)))
+  }
+
 }
