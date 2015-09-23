@@ -34,8 +34,23 @@ trait CarTable extends HasDatabaseConfig[JdbcProfile]{
 
   implicit val carFormat = Json.format[Car]
 
-  def findAll = {
-    db.run(cars.result)
+  def findAll(sortBy: String, desc: Boolean) = {
+    db.run(cars.sortBy(sortField(_, sortBy, desc)).result)
+  }
+
+  private def sortField(car: Cars, sortBy: String, desc: Boolean) = {
+    (sortBy, desc) match {
+      case ("title",   false) => car.title.asc
+      case ("title",   true)  => car.title.desc
+      case ("price",   false) => car.price.asc
+      case ("price",   true)  => car.price.desc
+      case ("is_new",  false) => car.is_new.asc
+      case ("is_new",  true)  => car.is_new.desc
+      case ("mileage", false) => car.mileage.asc
+      case ("mileage", true)  => car.mileage.desc
+      case ("id",      true)  => car.id.desc
+      case _                  => car.id.asc
+    }
   }
 
 }

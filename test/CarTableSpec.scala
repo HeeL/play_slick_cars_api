@@ -19,10 +19,26 @@ class CarTableSpec extends Specification {
 
     "should return a list of cars" in new WithApplication {
       Await.result(CarTable.dbConfig.db.run(TestData.setup), Duration.Inf)
-      val cars = Await.result(CarTable.findAll, Duration.Inf)
+      val cars = Await.result(CarTable.findAll("", false), Duration.Inf)
 
       cars.size must equalTo(2)
       cars.map(_.id) must equalTo(List(1,2))
+    }
+
+    "should return a sorted list of cars" in new WithApplication {
+      Await.result(CarTable.dbConfig.db.run(TestData.setup), Duration.Inf)
+      val cars = Await.result(CarTable.findAll("title", false), Duration.Inf)
+
+      cars.size must equalTo(2)
+      cars.head.title must equalTo("Audi A3")
+    }
+
+    "should return a descending sorted list of cars" in new WithApplication {
+      Await.result(CarTable.dbConfig.db.run(TestData.setup), Duration.Inf)
+      val cars = Await.result(CarTable.findAll("title", true), Duration.Inf)
+
+      cars.size must equalTo(2)
+      cars.head.title must equalTo("Ferrari")
     }
 
  }
